@@ -1,0 +1,25 @@
+name: Publish to zed-industries/extensions
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout extension repo
+        uses: actions/checkout@v4
+
+      - name: Publish to Zed Extensions Registry
+        uses: huacnlee/zed-extension-action@v2
+        with:
+          extension-name: zed-holyc
+          push-to: Snowman-scott/extensions
+        env:
+          COMMITTER_TOKEN: ${{ secrets.COMMITTER_TOKEN }}
