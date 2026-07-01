@@ -1,0 +1,5 @@
+name = "HolyC"
+grammar = "c"
+path_suffixes = ["HC", "hc", "HH", "hh"]
+line_comments = ["// "]
+block_comment = ["/*", "*/"]
