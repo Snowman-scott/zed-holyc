@@ -19,7 +19,7 @@ jobs:
       - name: Publish to Zed Extensions Registry
         uses: huacnlee/zed-extension-action@v2
         with:
-          extension-name: zed-holyc
+          extension-name: divine-hc
           push-to: Snowman-scott/extensions
         env:
           COMMITTER_TOKEN: ${{ secrets.COMMITTER_TOKEN }}

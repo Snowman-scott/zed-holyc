@@ -1,4 +1,4 @@
-# zed-holyc
+# Divine-hc
 
 This is an extension for zed to add HolyC support
 
