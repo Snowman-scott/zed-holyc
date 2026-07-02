@@ -1,6 +1,11 @@
 ; extends
 
-; --- 1. BYPASS C PARSER ERRORS (extern "c", linkages, and multichar tokens) ---
+; --- 0. CUSTOM HOLYC EXTENSIONS ---
+((identifier) @keyword.function (#eq? @keyword.function "_extern"))
+((identifier) @keyword.function (#eq? @keyword.function "asm"))
+((identifier) @keyword.function (#eq? @keyword.function "_asm"))
+
+; --- 1. BYPASS C PARSER ERRORS ---
 "extern" @keyword
 
 ((ERROR (identifier) @keyword)
@@ -8,7 +13,7 @@
 
 ((ERROR (string_literal) @string))
 
-; --- 2. CHARACTERS AND LITERALS (Forced green string mapping) ---
+; --- 2. CHARACTERS AND LITERALS ---
 (char_literal) @string
 (string_literal) @string
 (number_literal) @number
@@ -35,7 +40,7 @@
 "break" @keyword
 
 ((identifier) @keyword
- (#match? @keyword "^(auto|asm|_asm|lastclass|no_warn|reg|interrupt)$"))
+ (#match? @keyword "^(auto|lastclass|no_warn|reg|interrupt)$"))
 
 ; --- 5. LITERALS & CONSTANTS ---
 ((identifier) @constant.builtin
@@ -50,7 +55,7 @@
 
 ; --- 7. COMMENTS ---
 (comment) @comment
-(ERROR (comment)) @comment
+;(ERROR (comment)) @comment
 
 ; --- 8. OPERATORS & POINTER SYMBOLS ---
 "+" @operator
@@ -71,3 +76,22 @@
 "~" @operator
 "++" @operator
 "--" @operator
+
+; --- 9. NUCLEAR ASSEMBLY OVERRIDES ---
+
+; Force 'asm' to be blue (@function) instead of a pink keyword
+"asm" @function
+((identifier) @function (#eq? @function "asm"))
+((type_identifier) @function (#eq? @function "asm"))
+((ERROR (identifier) @function) (#eq? @function "asm"))
+
+; Force instructions (Purple)
+((identifier) @keyword (#match? @keyword "^(MOV|SYSCALL)$"))
+((type_identifier) @keyword (#match? @keyword "^(MOV|SYSCALL)$"))
+((field_identifier) @keyword (#match? @keyword "^(MOV|SYSCALL)$"))
+(call_expression function: (identifier) @keyword (#match? @keyword "^(MOV|SYSCALL)$"))
+(function_declarator declarator: (identifier) @keyword (#match? @keyword "^(MOV|SYSCALL)$"))
+((ERROR (identifier) @keyword) (#match? @keyword "^(MOV|SYSCALL)$"))
+
+; Force registers/constants (Orange)
+((identifier) @constant.builtin (#match? @constant.builtin "^(RAX|RDI|RSI|RDX|res)$"))

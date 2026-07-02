@@ -5,3 +5,5 @@ schema_version = 1
 authors = ["Epicwoman212"]
 description = "Syntax highlighting and language support for HolyC (.HC files)"
 repository = "https://github.com/Snowman-scott/divine-hc"
+
+languages = { holyc = "languages/holyc" }
