@@ -1,9 +1,13 @@
 id = "divine-hc"
-name = "HolyC"
-version = "0.1.0"
+name = "Divine HC"
+version = "0.1.1"
 schema_version = 1
 authors = ["Epicwoman212"]
-description = "Syntax highlighting and language support for HolyC (.HC files)"
+description = "HolyC language support for Zed"
 repository = "https://github.com/Snowman-scott/divine-hc"
 
-languages = { holyc = "languages/holyc" }
+[grammars.holyc]
+repository = "https://github.com/Snowman-scott/tree-sitter-holyc"
+rev = "d49b5f92f1826b1aba21fb5713b5a631968d7b2d"
+
+[language_servers]

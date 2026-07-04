@@ -1,97 +1,46 @@
-; extends
+; --- Types ---
+[
+  "I8" "I16" "I32" "I64"
+  "U8" "U16" "U32" "U64"
+  "F64" "Bool" "Char" "Void" "U0"
+] @type
 
-; --- 0. CUSTOM HOLYC EXTENSIONS ---
-((identifier) @keyword.function (#eq? @keyword.function "_extern"))
-((identifier) @keyword.function (#eq? @keyword.function "asm"))
-((identifier) @keyword.function (#eq? @keyword.function "_asm"))
+; --- Keywords ---
+["if" "else" "while" "for" "return" "class" "extern" "_extern"] @keyword
 
-; --- 1. BYPASS C PARSER ERRORS ---
-"extern" @keyword
+; --- Assembly ---
+["asm" "_asm"] @keyword
+(asm_mnemonic) @keyword.operator
+(register) @constant.builtin
 
-((ERROR (identifier) @keyword)
- (#eq? @keyword "extern"))
-
-((ERROR (string_literal) @string))
-
-; --- 2. CHARACTERS AND LITERALS ---
-(char_literal) @string
-(string_literal) @string
-(number_literal) @number
-
-; --- 3. HOLYC PRIMITIVE TYPES & POINTERS ---
-((identifier) @type
- (#match? @type "^(I8|I16|I32|I64|U8|U16|U32|U64|F32|F64|U0|Bool|I8i|I16i|I32i|I64i|U8i|U16i|U32i|U64i)$"))
-
-((type_identifier) @type)
-((primitive_type) @type)
-
-(pointer_declarator
-  declarator: (identifier) @type)
-
-; --- 4. STANDARD & HOLYC KEYWORDS ---
-"while" @keyword
-"return" @keyword
-"if" @keyword
-"else" @keyword
-"for" @keyword
-"switch" @keyword
-"case" @keyword
-"default" @keyword
-"break" @keyword
-
-((identifier) @keyword
- (#match? @keyword "^(auto|lastclass|no_warn|reg|interrupt)$"))
-
-; --- 5. LITERALS & CONSTANTS ---
-((identifier) @constant.builtin
- (#match? @constant.builtin "^(TRUE|FALSE|NULL|true|false)$"))
-
-; --- 6. FUNCTIONS & DECLARATIONS ---
-(function_declarator
-  declarator: (identifier) @function)
-
-(call_expression
-  function: (identifier) @function)
-
-; --- 7. COMMENTS ---
+; --- Literals ---
+(string) @string
+(char) @string
+(number) @number
 (comment) @comment
-;(ERROR (comment)) @comment
 
-; --- 8. OPERATORS & POINTER SYMBOLS ---
-"+" @operator
-"-" @operator
-"*" @operator
-"/" @operator
-"%" @operator
-"=" @operator
-"==" @operator
-"!=" @operator
-"<" @operator
-">" @operator
-"<<" @operator
-">>" @operator
-"&" @operator
-"|" @operator
-"^" @operator
-"~" @operator
-"++" @operator
-"--" @operator
+; --- Built-in constants ---
+((identifier) @constant.builtin
+  (#match? @constant.builtin "^(TRUE|FALSE|NULL|true|false)$"))
 
-; --- 9. NUCLEAR ASSEMBLY OVERRIDES ---
+; --- Generic fallback (MUST come before specific identifier rules below) ---
+(identifier) @variable
 
-; Force 'asm' to be blue (@function) instead of a pink keyword
-"asm" @function
-((identifier) @function (#eq? @function "asm"))
-((type_identifier) @function (#eq? @function "asm"))
-((ERROR (identifier) @function) (#eq? @function "asm"))
+; --- Specific identifier roles (override the fallback above) ---
+(function_definition (identifier) @function)
+(extern_declaration (identifier) @function)
+(call_expression (identifier) @function)
+(class_definition (identifier) @type)
 
-; Force instructions (Purple)
-((identifier) @keyword (#match? @keyword "^(MOV|SYSCALL)$"))
-((type_identifier) @keyword (#match? @keyword "^(MOV|SYSCALL)$"))
-((field_identifier) @keyword (#match? @keyword "^(MOV|SYSCALL)$"))
-(call_expression function: (identifier) @keyword (#match? @keyword "^(MOV|SYSCALL)$"))
-(function_declarator declarator: (identifier) @keyword (#match? @keyword "^(MOV|SYSCALL)$"))
-((ERROR (identifier) @keyword) (#match? @keyword "^(MOV|SYSCALL)$"))
+; --- Operators ---
+[
+  "+" "-" "*" "/" "%"
+  "=" "==" "!=" "<" ">" "<=" ">="
+  "&&" "||" "<<" ">>" "&" "|" "^" "~"
+  "++" "--"
+  "+=" "-=" "*=" "/=" "%=" "^=" "&=" "|=" "<<=" ">>="
+] @operator
 
-; Force registers/constants (Orange)
-((identifier) @constant.builtin (#match? @constant.builtin "^(RAX|RDI|RSI|RDX|res)$"))
+; --- Punctuation ---
+["(" ")" "{" "}" "[" "]"] @punctuation.bracket
+[";" ","] @punctuation.delimiter
